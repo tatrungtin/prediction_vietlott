@@ -17,8 +17,7 @@ import (
 const (
 	winningNumberURL = "https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/winning-number-655"
 	outputDir        = "data/draws/power_6_55"
-	targetDays       = 30   // Number of days to fetch
-	maxPages         = 5    // Maximum pages to try
+	targetDays       = 30   // Target number of draws
 	gameType         = "POWER_6_55"
 	dateLayout       = "02/01/2006"
 )
@@ -39,68 +38,85 @@ func main() {
 		log.Fatalf("Failed to create directory: %v", err)
 	}
 
-	// Fetch draws from the winning number page
-	draws := make([]Draw, 0)
+	fmt.Printf("🎲 Crawling Vietlott Power 6/55...\n\n")
 
-	for page := 0; page < maxPages; page++ {
-		fmt.Printf("Fetching page %d...\n", page+1)
-
-		url := winningNumberURL
-		if page > 0 {
-			// Try to get page via AJAX (this may not work without JS execution)
-			url = fmt.Sprintf("%s?page=%d", winningNumberURL, page)
-		}
-
-		pageDraws, err := fetchPage(url)
-		if err != nil {
-			log.Printf("Error fetching page %d: %v", page+1, err)
-			// If page 0 fails, we can't continue
-			if page == 0 {
-				log.Fatalf("Failed to fetch first page")
-			}
-			break
-		}
-
-		if len(pageDraws) == 0 {
-			fmt.Printf("No draws found on page %d, stopping\n", page+1)
-			break
-		}
-
-		draws = append(draws, pageDraws...)
-		fmt.Printf("  Found %d draws on page %d\n", len(pageDraws), page+1)
-
-		// Check if we have enough data
-		if len(draws) >= targetDays {
-			fmt.Printf("Reached target of %d draws\n", targetDays)
-			draws = draws[:targetDays] // Trim to exactly targetDays
-			break
-		}
-
-		// Small delay to be polite
-		time.Sleep(500 * time.Millisecond)
+	// Fetch latest draws from the winning number page
+	draws, err := fetchLatestDraws()
+	if err != nil {
+		log.Fatalf("Failed to fetch draws: %v", err)
 	}
 
-	fmt.Printf("\nTotal draws fetched: %d\n", len(draws))
+	if len(draws) == 0 {
+		fmt.Println("No draws found on Vietlott website")
+		return
+	}
 
-	// Save draws to individual JSON files
-	savedCount := 0
+	fmt.Printf("Found %d draws on Vietlott website\n\n", len(draws))
+
+	// Check what we already have
+	existingDraws := getExistingDraws()
+	newDraws := 0
+
+	// Save draws
 	for _, draw := range draws {
-		if err := saveDraw(draw); err != nil {
-			log.Printf("Error saving draw %d: %v", draw.DrawNumber, err)
-			continue
+		if !existingDraws[draw.DrawNumber] {
+			if err := saveDraw(draw); err != nil {
+				log.Printf("Error saving draw %d: %v", draw.DrawNumber, err)
+				continue
+			}
+			newDraws++
+			fmt.Printf("  ✓ New: %s - %s - Numbers: %v\n",
+				draw.ID,
+				draw.DrawDate.Format("02/01/2006"),
+				draw.Numbers)
 		}
-		savedCount++
-		fmt.Printf("  ✓ Saved: %s - %s - Numbers: %v\n",
-			draw.ID,
-			draw.DrawDate.Format("02/01/2006"),
-			draw.Numbers)
 	}
 
-	fmt.Printf("\nSuccessfully saved %d draws to %s\n", savedCount, outputDir)
+	fmt.Printf("\n✅ Saved %d new draws\n", newDraws)
+
+	// Show totals
+	totalDraws := len(existingDraws) + newDraws
+	fmt.Printf("📊 Total draws: %d/30\n", totalDraws)
+
+	if totalDraws < targetDays {
+		fmt.Printf("⏳ Need %d more draws (will accumulate over time via daily crawler)\n", targetDays-totalDraws)
+	}
+
+	fmt.Printf("\n📅 Daily GitHub Actions will fetch new draws automatically\n")
 }
 
-func fetchPage(url string) ([]Draw, error) {
-	req, err := http.NewRequest("GET", url, nil)
+func getExistingDraws() map[int]bool {
+	draws := make(map[int]bool)
+
+	entries, err := os.ReadDir(outputDir)
+	if err != nil {
+		return draws
+	}
+
+	re := regexp.MustCompile(`power_(\d+)\.json`)
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		matches := re.FindStringSubmatch(entry.Name())
+		if len(matches) < 2 {
+			continue
+		}
+
+		drawNum, err := strconv.Atoi(matches[1])
+		if err != nil {
+			continue
+		}
+
+		draws[drawNum] = true
+	}
+
+	return draws
+}
+
+func fetchLatestDraws() ([]Draw, error) {
+	req, err := http.NewRequest("GET", winningNumberURL, nil)
 	if err != nil {
 		return nil, err
 	}
