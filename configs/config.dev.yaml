@@ -31,9 +31,10 @@ storage:
 algorithms:
   enabled:
     - "frequency_analysis"
-    - "hot_cold_analysis"
-    - "pattern_analysis"
+    - "random_analysis"
   frequency_analysis:
+    weight: 0.5
+  random_analysis:
     weight: 1.0
   hot_cold_analysis:
     weight: 1.2

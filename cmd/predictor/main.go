@@ -132,6 +132,11 @@ func runPredict(cmd *cobra.Command, args []string) {
 				cfg.Algorithms.Configs[algoName].Weight,
 			)
 			weight = cfg.Algorithms.Configs[algoName].Weight
+		case "random_analysis":
+			algo = algorithm.NewRandomAnalyzer(
+				cfg.Algorithms.Configs[algoName].Weight,
+			)
+			weight = cfg.Algorithms.Configs[algoName].Weight
 		default:
 			logger.Warn("Unknown algorithm, skipping",
 				zap.String("algorithm", algoName),
