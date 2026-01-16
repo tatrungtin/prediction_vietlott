@@ -24,7 +24,7 @@ func NewFrequencyAnalyzer(weight float64) *FrequencyAnalyzer {
 	return &FrequencyAnalyzer{
 		name:     "frequency_analysis",
 		weight:   weight,
-		minDraws: 7, // Minimum 7 draws needed for frequency analysis
+		minDraws: 8, // Minimum 8 draws needed for frequency analysis
 	}
 }
 
