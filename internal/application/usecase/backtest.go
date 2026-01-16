@@ -145,33 +145,75 @@ func (uc *BacktestUseCase) getTestDraws(
 	ctx context.Context,
 	req BacktestRequest,
 ) ([]*entity.Draw, string, error) {
+	var draws []*entity.Draw
+	var err error
+	var desc string
+
 	if req.TestMode == "draws" {
 		// Get last N draws
-		draws, err := uc.scraper.FetchLatestDraws(ctx, req.GameType, req.TestSize)
+		draws, err = uc.scraper.FetchLatestDraws(ctx, req.GameType, req.TestSize)
 		if err != nil {
-			return nil, "", err
+			// Fallback to local storage
+			logger.Warn("Scraper failed, attempting to use local storage",
+				zap.Error(err),
+			)
+			draws, err = uc.drawRepo.FindLatest(ctx, req.GameType, req.TestSize)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to fetch historical data and no local data available: %w", err)
+			}
+			logger.Info("Using local storage data",
+				zap.Int("draws_count", len(draws)),
+			)
 		}
-		return draws, fmt.Sprintf("Last %d draws", req.TestSize), nil
+		desc = fmt.Sprintf("Last %d draws", req.TestSize)
 	} else if req.TestMode == "days" {
 		// Get draws within last N days
 		fromDate := time.Now().AddDate(0, 0, -req.TestSize)
 		toDate := time.Now()
 
-		draws, err := uc.scraper.FetchDrawsByDateRange(ctx, req.GameType, fromDate, toDate)
+		draws, err = uc.scraper.FetchDrawsByDateRange(ctx, req.GameType, fromDate, toDate)
 		if err != nil {
-			return nil, "", err
+			// Fallback to local storage
+			logger.Warn("Scraper failed, attempting to use local storage",
+				zap.Error(err),
+			)
+			dateRange, _ := valueobject.NewDateRange(fromDate, toDate)
+			draws, err = uc.drawRepo.FindByDateRange(ctx, req.GameType, dateRange)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to fetch historical data and no local data available: %w", err)
+			}
+			logger.Info("Using local storage data",
+				zap.Int("draws_count", len(draws)),
+			)
 		}
-		return draws, fmt.Sprintf("Last %d days", req.TestSize), nil
+		desc = fmt.Sprintf("Last %d days", req.TestSize)
 	} else if req.FromDate != nil && req.ToDate != nil {
 		// Custom date range
-		draws, err := uc.scraper.FetchDrawsByDateRange(ctx, req.GameType, *req.FromDate, *req.ToDate)
+		draws, err = uc.scraper.FetchDrawsByDateRange(ctx, req.GameType, *req.FromDate, *req.ToDate)
 		if err != nil {
-			return nil, "", err
+			// Fallback to local storage
+			logger.Warn("Scraper failed, attempting to use local storage",
+				zap.Error(err),
+			)
+			dateRange, _ := valueobject.NewDateRange(*req.FromDate, *req.ToDate)
+			draws, err = uc.drawRepo.FindByDateRange(ctx, req.GameType, dateRange)
+			if err != nil {
+				return nil, "", fmt.Errorf("failed to fetch historical data and no local data available: %w", err)
+			}
+			logger.Info("Using local storage data",
+				zap.Int("draws_count", len(draws)),
+			)
 		}
-		return draws, fmt.Sprintf("%s to %s", req.FromDate.Format("2006-01-02"), req.ToDate.Format("2006-01-02")), nil
+		desc = fmt.Sprintf("%s to %s", req.FromDate.Format("2006-01-02"), req.ToDate.Format("2006-01-02"))
+	} else {
+		return nil, "", fmt.Errorf("invalid test mode: %s", req.TestMode)
 	}
 
-	return nil, "", fmt.Errorf("invalid test mode: %s", req.TestMode)
+	if len(draws) == 0 {
+		return nil, "", fmt.Errorf("no draws found")
+	}
+
+	return draws, desc, nil
 }
 
 // backtestAlgorithm backtests a single algorithm
@@ -197,9 +239,10 @@ func (uc *BacktestUseCase) backtestAlgorithm(
 	}
 
 	// Walk through each draw (except last few used for training)
-	minTrainingDraws := 30
+	// Use minimum of 7 draws for training to allow at least 1 prediction test
+	minTrainingDraws := 7
 	if len(draws) <= minTrainingDraws {
-		return nil, fmt.Errorf("not enough draws for backtesting")
+		return nil, fmt.Errorf("not enough draws for backtesting: need at least %d draws, got %d", minTrainingDraws+1, len(draws))
 	}
 
 	for i := minTrainingDraws; i < len(draws); i++ {
