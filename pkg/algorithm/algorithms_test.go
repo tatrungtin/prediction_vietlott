@@ -72,13 +72,13 @@ func TestFrequencyAnalyzer_SetWeight(t *testing.T) {
 func TestFrequencyAnalyzer_Validate(t *testing.T) {
 	analyzer := NewFrequencyAnalyzer(1.0)
 
-	// Test with insufficient data
-	draws := createMockDraws(valueobject.Mega645, 10)
+	// Test with insufficient data (less than 8)
+	draws := createMockDraws(valueobject.Mega645, 7)
 	err := analyzer.Validate(draws)
 	assert.Error(t, err)
 
 	// Test with sufficient data
-	draws = createMockDraws(valueobject.Mega645, 50)
+	draws = createMockDraws(valueobject.Mega645, 8)
 	err = analyzer.Validate(draws)
 	assert.NoError(t, err)
 }
