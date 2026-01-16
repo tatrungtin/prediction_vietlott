@@ -15,9 +15,9 @@ import (
 type VotingStrategy string
 
 const (
-	WeightedVoting      VotingStrategy = "weighted"
-	MajorityVoting      VotingStrategy = "majority"
-	ConfidenceWeighted  VotingStrategy = "confidence_weighted"
+	WeightedVoting     VotingStrategy = "weighted"
+	MajorityVoting     VotingStrategy = "majority"
+	ConfidenceWeighted VotingStrategy = "confidence_weighted"
 )
 
 // Ensemble combines multiple algorithms using voting strategies

@@ -17,7 +17,7 @@ import (
 const (
 	winningNumberURL = "https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/winning-number-655"
 	outputDir        = "data/draws/power_6_55"
-	targetDays       = 30   // Target number of draws
+	targetDays       = 30 // Target number of draws
 	gameType         = "POWER_6_55"
 	dateLayout       = "02/01/2006"
 )

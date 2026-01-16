@@ -20,9 +20,9 @@ import (
 )
 
 var (
-	cfgFile    string
-	gameType   string
-	verbose    bool
+	cfgFile  string
+	gameType string
+	verbose  bool
 )
 
 var rootCmd = &cobra.Command{

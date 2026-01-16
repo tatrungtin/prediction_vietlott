@@ -8,10 +8,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	predictionpb "github.com/tool_predict/proto"
 	"github.com/tool_predict/internal/application/port"
 	"github.com/tool_predict/internal/domain/entity"
 	"github.com/tool_predict/internal/infrastructure/logger"
+	predictionpb "github.com/tool_predict/proto"
 	"go.uber.org/zap"
 )
 

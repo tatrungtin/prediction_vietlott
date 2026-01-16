@@ -51,7 +51,7 @@ type PredictionRepository interface {
 		ctx context.Context,
 		gameType valueobject.GameType,
 		startDate interface{}, // time.Time
-		endDate interface{},   // time.Time
+		endDate interface{}, // time.Time
 	) ([]*entity.Prediction, error)
 
 	// Count returns the total number of predictions for a game type

@@ -16,11 +16,11 @@ import (
 
 // BacktestUseCase orchestrates the backtesting workflow
 type BacktestUseCase struct {
-	drawRepo       repository.DrawRepository
-	backtestRepo   repository.BacktestRepository
-	statsRepo      repository.StatsRepository
-	registry       *algorithm.Registry
-	scraper        port.VietlottScraper
+	drawRepo     repository.DrawRepository
+	backtestRepo repository.BacktestRepository
+	statsRepo    repository.StatsRepository
+	registry     *algorithm.Registry
+	scraper      port.VietlottScraper
 }
 
 // NewBacktestUseCase creates a new backtest use case
@@ -42,22 +42,22 @@ func NewBacktestUseCase(
 
 // BacktestRequest contains the backtest parameters
 type BacktestRequest struct {
-	GameType      valueobject.GameType
-	TestMode      string // "draws" or "days"
-	TestSize      int
-	Algorithms    []string
-	FromDate      *time.Time
-	ToDate        *time.Time
+	GameType   valueobject.GameType
+	TestMode   string // "draws" or "days"
+	TestSize   int
+	Algorithms []string
+	FromDate   *time.Time
+	ToDate     *time.Time
 }
 
 // BacktestResult contains the backtest results
 type BacktestResult struct {
-	GameType       valueobject.GameType
-	TestMode       string
-	TestPeriod     string
+	GameType         valueobject.GameType
+	TestMode         string
+	TestPeriod       string
 	TotalPredictions int
-	Results        []*entity.BacktestResult
-	Duration       time.Duration
+	Results          []*entity.BacktestResult
+	Duration         time.Duration
 }
 
 // Execute runs the backtest
@@ -131,12 +131,12 @@ func (uc *BacktestUseCase) Execute(
 	)
 
 	return &BacktestResult{
-		GameType:        req.GameType,
-		TestMode:        req.TestMode,
-		TestPeriod:      testPeriodDesc,
+		GameType:         req.GameType,
+		TestMode:         req.TestMode,
+		TestPeriod:       testPeriodDesc,
 		TotalPredictions: len(draws),
-		Results:         results,
-		Duration:        duration,
+		Results:          results,
+		Duration:         duration,
 	}, nil
 }
 

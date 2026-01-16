@@ -33,7 +33,7 @@ type BacktestRepository interface {
 	FindByDateRange(
 		ctx context.Context,
 		startDate interface{}, // time.Time
-		endDate interface{},   // time.Time
+		endDate interface{}, // time.Time
 	) ([]*entity.BacktestResult, error)
 
 	// FindBestPerforming finds the best performing algorithm for a game type

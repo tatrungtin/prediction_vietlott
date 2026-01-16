@@ -118,8 +118,8 @@ func (pa *PatternAnalyzer) Predict(
 		Metadata: map[string]string{
 			"consecutive_pairs": strings.Trim(strings.Join(fmtIntSlice(consecutivePattern), ","), "[]"),
 			"target_odd_count":  fmt.Sprintf("%d", oddEvenPattern.targetOddCount),
-			"sum_range":        fmt.Sprintf("%d-%d", sumPattern.minSum, sumPattern.maxSum),
-			"low_high_ratio":   fmt.Sprintf("%.2f", lowHighPattern.ratio),
+			"sum_range":         fmt.Sprintf("%d-%d", sumPattern.minSum, sumPattern.maxSum),
+			"low_high_ratio":    fmt.Sprintf("%.2f", lowHighPattern.ratio),
 		},
 	}
 

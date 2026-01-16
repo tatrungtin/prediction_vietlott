@@ -13,10 +13,10 @@ import (
 
 // FrequencyAnalyzer analyzes number frequency in historical draws
 type FrequencyAnalyzer struct {
-	name        string
-	weight      float64
-	minDraws    int
-	mu          sync.RWMutex
+	name     string
+	weight   float64
+	minDraws int
+	mu       sync.RWMutex
 }
 
 // NewFrequencyAnalyzer creates a new frequency analyzer
@@ -154,8 +154,8 @@ func (fa *FrequencyAnalyzer) Predict(
 		ForDate:       time.Now().Add(24 * time.Hour), // Predict for tomorrow
 		Metadata: map[string]string{
 			"min_draws_required": fmt.Sprintf("%d", fa.minDraws),
-			"total_draws_used":  fmt.Sprintf("%d", len(historicalData)),
-			"expected_freq":     fmt.Sprintf("%.4f", expectedFreq),
+			"total_draws_used":   fmt.Sprintf("%d", len(historicalData)),
+			"expected_freq":      fmt.Sprintf("%.4f", expectedFreq),
 		},
 	}
 

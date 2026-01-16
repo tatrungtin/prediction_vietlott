@@ -10,22 +10,22 @@ import (
 
 // AlgorithmStats represents performance statistics for a prediction algorithm
 type AlgorithmStats struct {
-	ID              string                   `json:"id"`
-	AlgorithmName   string                   `json:"algorithm_name"`
-	GameType        valueobject.GameType     `json:"game_type"`
-	TotalPredictions int                     `json:"total_predictions"`
+	ID               string               `json:"id"`
+	AlgorithmName    string               `json:"algorithm_name"`
+	GameType         valueobject.GameType `json:"game_type"`
+	TotalPredictions int                  `json:"total_predictions"`
 
 	// Performance metrics
-	Accuracy3Numbers float64                  `json:"accuracy_3_numbers"`
-	Accuracy4Numbers float64                  `json:"accuracy_4_numbers"`
-	AccuracyExact    float64                  `json:"accuracy_exact"`
-	AverageConfidence float64                 `json:"average_confidence"`
+	Accuracy3Numbers  float64 `json:"accuracy_3_numbers"`
+	Accuracy4Numbers  float64 `json:"accuracy_4_numbers"`
+	AccuracyExact     float64 `json:"accuracy_exact"`
+	AverageConfidence float64 `json:"average_confidence"`
 
 	// Metadata
-	IsActive        bool                      `json:"is_active"`
-	Weight          float64                  `json:"weight"` // For ensemble voting
-	LastUpdated     time.Time                `json:"last_updated"`
-	CreatedAt       time.Time                `json:"created_at"`
+	IsActive    bool      `json:"is_active"`
+	Weight      float64   `json:"weight"` // For ensemble voting
+	LastUpdated time.Time `json:"last_updated"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 // NewAlgorithmStats creates a new AlgorithmStats entity
@@ -51,18 +51,18 @@ func NewAlgorithmStats(
 
 	now := time.Now()
 	return &AlgorithmStats{
-		ID:               uuid.New().String(),
-		AlgorithmName:    algorithmName,
-		GameType:         gameType,
-		TotalPredictions: 0,
-		Accuracy3Numbers: 0.0,
-		Accuracy4Numbers: 0.0,
-		AccuracyExact:    0.0,
+		ID:                uuid.New().String(),
+		AlgorithmName:     algorithmName,
+		GameType:          gameType,
+		TotalPredictions:  0,
+		Accuracy3Numbers:  0.0,
+		Accuracy4Numbers:  0.0,
+		AccuracyExact:     0.0,
 		AverageConfidence: 0.0,
-		IsActive:         true,
-		Weight:           weight,
-		LastUpdated:      now,
-		CreatedAt:        now,
+		IsActive:          true,
+		Weight:            weight,
+		LastUpdated:       now,
+		CreatedAt:         now,
 	}, nil
 }
 

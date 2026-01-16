@@ -36,9 +36,9 @@ func NewVietlottAPIScraper(baseURL string, timeout time.Duration, retryCount int
 		client: &http.Client{
 			Timeout: timeout,
 			Transport: &http.Transport{
-				MaxIdleConns:        10,
-				IdleConnTimeout:     30 * time.Second,
-				DisableCompression:  false,
+				MaxIdleConns:       10,
+				IdleConnTimeout:    30 * time.Second,
+				DisableCompression: false,
 			},
 		},
 		baseURL:    baseURL,
@@ -245,11 +245,11 @@ func (s *VietlottAPIScraper) fetchFromAPI(
 	var apiResponse struct {
 		Data struct {
 			Items []struct {
-				DrawNumber int      `json:"drawNumber"`
-				Numbers    []int    `json:"numbers"`
-				DrawDate   string   `json:"drawDate"`
-				Jackpot    float64  `json:"jackpot"`
-				Winners    int      `json:"winners"`
+				DrawNumber int     `json:"drawNumber"`
+				Numbers    []int   `json:"numbers"`
+				DrawDate   string  `json:"drawDate"`
+				Jackpot    float64 `json:"jackpot"`
+				Winners    int     `json:"winners"`
 			} `json:"items"`
 		} `json:"data"`
 	}

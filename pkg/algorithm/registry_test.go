@@ -276,7 +276,7 @@ func TestEnsemble_UpdateWeights(t *testing.T) {
 
 	performanceStats := map[string]float64{
 		"frequency_analysis": 0.8,
-		"hot_cold_analysis":   1.2,
+		"hot_cold_analysis":  1.2,
 	}
 
 	err := ensemble.UpdateWeights(performanceStats)

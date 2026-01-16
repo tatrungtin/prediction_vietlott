@@ -9,13 +9,13 @@ import (
 
 // Config represents the application configuration
 type Config struct {
-	App        AppConfig        `mapstructure:"app"`
-	Scraper    ScraperConfig    `mapstructure:"scraper"`
-	GRPC       GRPCConfig       `mapstructure:"grpc"`
-	Storage    StorageConfig    `mapstructure:"storage"`
-	Algorithms AlgorithmConfig  `mapstructure:"algorithms"`
-	Ensemble   EnsembleConfig   `mapstructure:"ensemble"`
-	Backtest   BacktestConfig   `mapstructure:"backtest"`
+	App        AppConfig       `mapstructure:"app"`
+	Scraper    ScraperConfig   `mapstructure:"scraper"`
+	GRPC       GRPCConfig      `mapstructure:"grpc"`
+	Storage    StorageConfig   `mapstructure:"storage"`
+	Algorithms AlgorithmConfig `mapstructure:"algorithms"`
+	Ensemble   EnsembleConfig  `mapstructure:"ensemble"`
+	Backtest   BacktestConfig  `mapstructure:"backtest"`
 }
 
 // AppConfig represents application-level configuration
@@ -32,12 +32,12 @@ type ScraperConfig struct {
 
 // VietlottScraperConfig represents Vietlott-specific scraper configuration
 type VietlottScraperConfig struct {
-	BaseURL    string        `mapstructure:"base_url"`
-	Mega645Path  string      `mapstructure:"mega_645_path"`
-	Power655Path string      `mapstructure:"power_655_path"`
-	Timeout    time.Duration `mapstructure:"timeout"`
-	RetryCount int           `mapstructure:"retry_count"`
-	RateLimit  int           `mapstructure:"rate_limit"`
+	BaseURL      string        `mapstructure:"base_url"`
+	Mega645Path  string        `mapstructure:"mega_645_path"`
+	Power655Path string        `mapstructure:"power_655_path"`
+	Timeout      time.Duration `mapstructure:"timeout"`
+	RetryCount   int           `mapstructure:"retry_count"`
+	RateLimit    int           `mapstructure:"rate_limit"`
 }
 
 // GRPCConfig represents gRPC configuration
@@ -48,9 +48,9 @@ type GRPCConfig struct {
 
 // TooPredictGRPCConfig represents gRPC client configuration for too_predict
 type TooPredictGRPCConfig struct {
-	Address    string        `mapstructure:"address"`
-	Timeout    time.Duration `mapstructure:"timeout"`
-	EnableTLS  bool          `mapstructure:"enable_tls"`
+	Address   string        `mapstructure:"address"`
+	Timeout   time.Duration `mapstructure:"timeout"`
+	EnableTLS bool          `mapstructure:"enable_tls"`
 }
 
 // ServerGRPCConfig represents gRPC server configuration
@@ -61,9 +61,9 @@ type ServerGRPCConfig struct {
 
 // StorageConfig represents storage configuration
 type StorageConfig struct {
-	Type   string        `mapstructure:"type"` // "json" or "sqlite"
-	SQLite SQLiteConfig  `mapstructure:"sqlite"`
-	JSON   JSONConfig    `mapstructure:"json"`
+	Type   string       `mapstructure:"type"` // "json" or "sqlite"
+	SQLite SQLiteConfig `mapstructure:"sqlite"`
+	JSON   JSONConfig   `mapstructure:"json"`
 }
 
 // SQLiteConfig represents SQLite storage configuration
@@ -90,14 +90,14 @@ type AlgorithmDetails struct {
 
 // EnsembleConfig represents ensemble configuration
 type EnsembleConfig struct {
-	VotingStrategy string  `mapstructure:"voting_strategy"` // "weighted", "majority", "confidence_weighted"
-	MinPredictions int     `mapstructure:"min_predictions"`
+	VotingStrategy string `mapstructure:"voting_strategy"` // "weighted", "majority", "confidence_weighted"
+	MinPredictions int    `mapstructure:"min_predictions"`
 }
 
 // BacktestConfig represents backtesting configuration
 type BacktestConfig struct {
-	DefaultTestPeriodDays  int `mapstructure:"default_test_period_days"`
-	DefaultTestPeriodDraws int `mapstructure:"default_test_period_draws"`
+	DefaultTestPeriodDays  int  `mapstructure:"default_test_period_days"`
+	DefaultTestPeriodDraws int  `mapstructure:"default_test_period_draws"`
 	EnableAutoWeightUpdate bool `mapstructure:"enable_auto_weight_update"`
 }
 

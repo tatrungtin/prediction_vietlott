@@ -10,14 +10,14 @@ import (
 
 // Draw represents a historical Vietlott lottery draw result
 type Draw struct {
-	ID         string                   `json:"id"`
-	GameType   valueobject.GameType     `json:"game_type"`
-	DrawNumber int                      `json:"draw_number"`
-	Numbers    valueobject.Numbers      `json:"numbers"`
-	DrawDate   time.Time                `json:"draw_date"`
-	Jackpot    float64                  `json:"jackpot"`
-	Winners    int                      `json:"winners"`
-	CreatedAt  time.Time                `json:"created_at"`
+	ID         string               `json:"id"`
+	GameType   valueobject.GameType `json:"game_type"`
+	DrawNumber int                  `json:"draw_number"`
+	Numbers    valueobject.Numbers  `json:"numbers"`
+	DrawDate   time.Time            `json:"draw_date"`
+	Jackpot    float64              `json:"jackpot"`
+	Winners    int                  `json:"winners"`
+	CreatedAt  time.Time            `json:"created_at"`
 }
 
 // NewDraw creates a new Draw entity with validation

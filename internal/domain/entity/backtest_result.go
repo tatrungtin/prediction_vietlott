@@ -20,25 +20,25 @@ type PredictionMatch struct {
 
 // BacktestResult represents the results of backtesting an algorithm
 type BacktestResult struct {
-	ID                 string                       `json:"id"`
-	GameType           valueobject.GameType         `json:"game_type"`
-	AlgorithmName      string                       `json:"algorithm_name"`
-	TestPeriod         valueobject.DateRange        `json:"test_period"`
-	TotalPredictions   int                          `json:"total_predictions"`
+	ID               string                `json:"id"`
+	GameType         valueobject.GameType  `json:"game_type"`
+	AlgorithmName    string                `json:"algorithm_name"`
+	TestPeriod       valueobject.DateRange `json:"test_period"`
+	TotalPredictions int                   `json:"total_predictions"`
 
 	// Match statistics
-	ExactMatches       int                          `json:"exact_matches"`
-	ThreeNumberMatches int                          `json:"three_number_matches"`
-	FourNumberMatches  int                          `json:"four_number_matches"`
+	ExactMatches       int `json:"exact_matches"`
+	ThreeNumberMatches int `json:"three_number_matches"`
+	FourNumberMatches  int `json:"four_number_matches"`
 
 	// Performance metrics
-	AverageConfidence  float64                      `json:"average_confidence"`
-	ExecutionTime      time.Duration                `json:"execution_time"`
-	CreatedAt          time.Time                    `json:"created_at"`
-	LastUpdated        time.Time                    `json:"last_updated"`
+	AverageConfidence float64       `json:"average_confidence"`
+	ExecutionTime     time.Duration `json:"execution_time"`
+	CreatedAt         time.Time     `json:"created_at"`
+	LastUpdated       time.Time     `json:"last_updated"`
 
 	// Detailed results (optional, can be large)
-	DetailedResults    []PredictionMatch            `json:"detailed_results,omitempty"`
+	DetailedResults []PredictionMatch `json:"detailed_results,omitempty"`
 }
 
 // NewBacktestResult creates a new BacktestResult entity

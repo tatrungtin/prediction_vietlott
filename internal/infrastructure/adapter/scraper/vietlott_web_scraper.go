@@ -21,12 +21,12 @@ import (
 
 // VietlottWebScraper scrapes Vietlott data from their website using goquery
 type VietlottWebScraper struct {
-	client     *http.Client
-	baseURL    string
-	timeout    time.Duration
-	retryCount int
-	rateLimit  time.Duration
-	mu         sync.Mutex
+	client      *http.Client
+	baseURL     string
+	timeout     time.Duration
+	retryCount  int
+	rateLimit   time.Duration
+	mu          sync.Mutex
 	lastRequest time.Time
 }
 

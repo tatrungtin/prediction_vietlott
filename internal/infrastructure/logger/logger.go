@@ -19,9 +19,9 @@ func Init(logLevel string) error {
 	}
 
 	config := zap.Config{
-		Level:            zap.NewAtomicLevelAt(level),
-		Development:      false,
-		Encoding:         "json",
+		Level:       zap.NewAtomicLevelAt(level),
+		Development: false,
+		Encoding:    "json",
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        "timestamp",
 			LevelKey:       "level",
@@ -56,9 +56,9 @@ func InitDevelopment(logLevel string) error {
 	}
 
 	config := zap.Config{
-		Level:            zap.NewAtomicLevelAt(level),
-		Development:      true,
-		Encoding:         "console",
+		Level:       zap.NewAtomicLevelAt(level),
+		Development: true,
+		Encoding:    "console",
 		EncoderConfig: zapcore.EncoderConfig{
 			TimeKey:        "T",
 			LevelKey:       "L",

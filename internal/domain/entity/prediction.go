@@ -10,14 +10,14 @@ import (
 
 // Prediction represents a single algorithm's lottery number prediction
 type Prediction struct {
-	ID            string                   `json:"id"`
-	GameType      valueobject.GameType     `json:"game_type"`
-	AlgorithmName string                   `json:"algorithm_name"`
-	Numbers       valueobject.Numbers      `json:"numbers"`
-	Confidence    float64                  `json:"confidence"`
-	GeneratedAt   time.Time                `json:"generated_at"`
-	ForDate       time.Time                `json:"for_date"`
-	Metadata      map[string]string        `json:"metadata,omitempty"`
+	ID            string               `json:"id"`
+	GameType      valueobject.GameType `json:"game_type"`
+	AlgorithmName string               `json:"algorithm_name"`
+	Numbers       valueobject.Numbers  `json:"numbers"`
+	Confidence    float64              `json:"confidence"`
+	GeneratedAt   time.Time            `json:"generated_at"`
+	ForDate       time.Time            `json:"for_date"`
+	Metadata      map[string]string    `json:"metadata,omitempty"`
 }
 
 // NewPrediction creates a new Prediction entity
@@ -65,13 +65,13 @@ type AlgorithmContribution struct {
 
 // EnsemblePrediction represents a combined prediction from multiple algorithms
 type EnsemblePrediction struct {
-	ID              string                       `json:"id"`
-	GameType        valueobject.GameType         `json:"game_type"`
-	Predictions     []*Prediction                `json:"predictions"`
-	FinalNumbers    valueobject.Numbers          `json:"final_numbers"`
-	VotingStrategy  string                       `json:"voting_strategy"`
-	GeneratedAt     time.Time                    `json:"generated_at"`
-	AlgorithmStats  []AlgorithmContribution      `json:"algorithm_stats"`
+	ID             string                  `json:"id"`
+	GameType       valueobject.GameType    `json:"game_type"`
+	Predictions    []*Prediction           `json:"predictions"`
+	FinalNumbers   valueobject.Numbers     `json:"final_numbers"`
+	VotingStrategy string                  `json:"voting_strategy"`
+	GeneratedAt    time.Time               `json:"generated_at"`
+	AlgorithmStats []AlgorithmContribution `json:"algorithm_stats"`
 }
 
 // NewEnsemblePrediction creates a new EnsemblePrediction entity
