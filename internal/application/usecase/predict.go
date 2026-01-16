@@ -56,7 +56,17 @@ func (uc *PredictUseCase) Execute(
 	logger.Info("Fetching historical data")
 	draws, err := uc.scraper.FetchLatestDraws(ctx, gameType, 200)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch historical data: %w", err)
+		// Fallback to local storage if scraper fails
+		logger.Warn("Scraper failed, attempting to use local storage",
+			zap.Error(err),
+		)
+		draws, err = uc.drawRepo.FindLatest(ctx, gameType, 200)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch historical data and no local data available: %w", err)
+		}
+		logger.Info("Using local storage data",
+			zap.Int("draws_count", len(draws)),
+		)
 	}
 
 	if len(draws) < algorithmCount {

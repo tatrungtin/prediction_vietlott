@@ -1,0 +1,75 @@
+name: Daily Vietlott Crawl
+
+on:
+  schedule:
+    # Run daily at 18:00 UTC (midnight Vietnam time + 1 day)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  crawl-vietlott:
+    name: Crawl Vietlott Data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run Vietlott crawler
+        run: go run scripts/crawl_vietlott.go
+        env:
+          TZ: 'Asia/Ho_Chi_Minh'
+
+      - name: Check for new data
+        id: check-data
+        run: |
+          if [ -n "$(git status --porcelain data/draws/)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "New data found!"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No new data to commit"
+          fi
+
+      - name: Configure Git
+        if: steps.check-data.outputs.has_changes == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit and push changes
+        if: steps.check-data.outputs.has_changes == 'true'
+        run: |
+          git add data/draws/
+          git commit -m "chore: crawl Vietlott data - $(date +'%Y-%m-%d')"
+          git push
+
+      - name: Create summary
+        if: steps.check-data.outputs.has_changes == 'true'
+        run: |
+          echo "## Vietlott Crawl Summary 🎲" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date +'%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: New data crawled and committed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Files Changed:" >> $GITHUB_STEP_SUMMARY
+          git diff --stat HEAD data/draws/ >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Initial commit" >> $GITHUB_STEP_SUMMARY
+
+      - name: No changes summary
+        if: steps.check-data.outputs.has_changes == 'false'
+        run: |
+          echo "## Vietlott Crawl Summary 🎲" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date**: $(date +'%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: No new data available" >> $GITHUB_STEP_SUMMARY
