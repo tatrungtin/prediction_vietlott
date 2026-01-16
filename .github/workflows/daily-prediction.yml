@@ -1,0 +1,108 @@
+name: Daily Prediction
+
+on:
+  schedule:
+    # Run daily at 18:00 UTC (midnight Vietnam time is 17:00 UTC)
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      game_type:
+        description: 'Game type to predict (MEGA_6_45 or POWER_6_55)'
+        required: false
+        default: 'BOTH'
+        type: choice
+        options:
+          - MEGA_6_45
+          - POWER_6_55
+          - BOTH
+
+env:
+  GO_VERSION: '1.21'
+
+jobs:
+  predict:
+    name: Generate Predictions
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build applications
+        run: |
+          mkdir -p bin
+          go build -o bin/predictor ./cmd/predictor
+          go build -o bin/backtester ./cmd/backtester
+          chmod +x bin/predictor bin/backtester
+
+      - name: Create data directory
+        run: mkdir -p data
+
+      - name: Generate MEGA 6/45 prediction
+        if: github.event.inputs.game_type != 'POWER_6_55'
+        run: |
+          ./bin/predictor \
+            --config=./configs/config.prod.yaml \
+            --game-type=MEGA_6_45 \
+            2>&1 | tee logs/mega_645_prediction_$(date +%Y%m%d).log
+        env:
+          GRPC_SERVER_ADDRESS: ${{ secrets.GRPC_SERVER_ADDRESS }}
+
+      - name: Generate POWER 6/55 prediction
+        if: github.event.inputs.game_type != 'MEGA_6_45'
+        run: |
+          ./bin/predictor \
+            --config=./configs/config.prod.yaml \
+            --game-type=POWER_6_55 \
+            2>&1 | tee logs/power_655_prediction_$(date +%Y%m%d).log
+        env:
+          GRPC_SERVER_ADDRESS: ${{ secrets.GRPC_SERVER_ADDRESS }}
+
+      - name: Upload prediction logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prediction-logs-${{ github.run_number }}
+          path: logs/
+          retention-days: 30
+
+      - name: Upload prediction data
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: prediction-data-${{ github.run_number }}
+          path: |
+            data/predictions/
+            data/ensembles/
+          retention-days: 90
+
+      - name: Create summary
+        if: success()
+        run: |
+          echo "## 🎯 Prediction Summary - $(date +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Predictions generated successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- Run ID: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Generated Files" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls -lh data/predictions/ data/ensembles/ 2>/dev/null || echo "No data files found" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.setFailed('Prediction generation failed. Check logs for details.')

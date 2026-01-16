@@ -1,0 +1,10 @@
+version: v1
+breaking:
+  use_unstable_output: true
+lint:
+  use_community_standard: true
+  except:
+    - ENUM_VALUE_PREFIX
+    - ENUM_ZERO_VALUE_SUFFIX
+    - SERVICE_SUFFIX
+    - PACKAGE_DIRECTORY_MATCH

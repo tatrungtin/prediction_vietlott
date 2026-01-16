@@ -1,0 +1,50 @@
+app:
+  name: "tool_predict"
+  environment: "development"
+  log_level: "debug"
+
+scraper:
+  vietlott:
+    base_url: "https://vietlott.vn"
+    mega_645_path: "/vi/trung-thuong/ket-qua-trung-thuong/6-45"
+    power_655_path: "/vi/trung-thuong/ket-qua-trung-thuong/6-55"
+    timeout: 30s
+    retry_count: 3
+    rate_limit: 2
+
+grpc:
+  too_predict:
+    address: "localhost:50051"
+    timeout: 10s
+    enable_tls: false
+  server:
+    port: 50052
+    enable_reflection: true
+
+storage:
+  type: "json"
+  json:
+    base_path: "./data"
+  sqlite:
+    path: "./data/predictions.db"
+
+algorithms:
+  enabled:
+    - "frequency_analysis"
+    - "hot_cold_analysis"
+    - "pattern_analysis"
+  frequency_analysis:
+    weight: 1.0
+  hot_cold_analysis:
+    weight: 1.2
+  pattern_analysis:
+    weight: 0.8
+
+ensemble:
+  voting_strategy: "weighted"  # "weighted", "majority", "confidence_weighted"
+  min_predictions: 2
+
+backtest:
+  default_test_period_days: 30
+  default_test_period_draws: 30
+  enable_auto_weight_update: true
