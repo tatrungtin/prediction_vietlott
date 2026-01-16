@@ -102,20 +102,22 @@ func (uc *PredictUseCase) Execute(
 		// Don't fail the workflow if saving fails
 	}
 
-	// Step 4: Send via gRPC to too_predict
+	// Step 4: Send via gRPC to too_predict (optional)
 	if uc.grpcClient != nil {
 		logger.Info("Sending prediction to too_predict via gRPC")
 		if err := uc.grpcClient.SendPrediction(ctx, ensemblePred); err != nil {
-			logger.Error("Failed to send prediction via gRPC",
+			logger.Warn("Failed to send prediction via gRPC (continuing without it)",
 				zap.String("prediction_id", ensemblePred.ID),
 				zap.Error(err),
 			)
-			return nil, fmt.Errorf("gRPC send failed: %w", err)
+			// Don't fail the workflow if gRPC fails
+		} else {
+			logger.Info("Prediction sent successfully to too_predict",
+				zap.String("prediction_id", ensemblePred.ID),
+			)
 		}
-
-		logger.Info("Prediction sent successfully to too_predict",
-			zap.String("prediction_id", ensemblePred.ID),
-		)
+	} else {
+		logger.Info("gRPC client not configured, skipping send to too_predict")
 	}
 
 	duration := time.Since(startTime)

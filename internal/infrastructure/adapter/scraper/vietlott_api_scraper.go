@@ -179,7 +179,7 @@ func (s *VietlottAPIScraper) fetchFromAPI(
 ) ([]*entity.Draw, error) {
 	// Construct API URL
 	gameTypeStr := strings.ToLower(string(gameType))
-	apiPath, ok := vietlott.GameTypeAPIPathMap[gameTypeStr]
+	apiPath, ok := vietlott.GameTypePathMap[gameTypeStr]
 	if !ok {
 		return nil, fmt.Errorf("unknown game type: %s", gameType)
 	}
