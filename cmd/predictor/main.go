@@ -23,6 +23,7 @@ var (
 	cfgFile  string
 	gameType string
 	verbose  bool
+	maxDraws int
 )
 
 var rootCmd = &cobra.Command{
@@ -42,6 +43,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&cfgFile, "config", "c", "./configs/config.dev.yaml", "Config file path")
 	rootCmd.Flags().StringVarP(&gameType, "game-type", "g", "MEGA_6_45", "Game type (MEGA_6_45 or POWER_6_55)")
 	rootCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	rootCmd.Flags().IntVarP(&maxDraws, "draws", "d", 30, "Number of latest draws to use for prediction (default: 30)")
 }
 
 func main() {
@@ -176,9 +178,10 @@ func runPredict(cmd *cobra.Command, args []string) {
 	)
 
 	// Execute prediction
-	fmt.Printf("\n🎯 Generating prediction for %s...\n\n", gameType)
+	fmt.Printf("\n🎯 Generating prediction for %s...\n", gameType)
+	fmt.Printf("📊 Using %d latest draws by date\n\n", maxDraws)
 
-	result, err := predictUseCase.Execute(ctx, gt, registry.Count())
+	result, err := predictUseCase.Execute(ctx, gt, registry.Count(), maxDraws)
 	if err != nil {
 		logger.Fatal("Prediction failed", zap.Error(err))
 		os.Exit(1)

@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/tool_predict/internal/application/port"
@@ -45,11 +46,13 @@ func (uc *PredictUseCase) Execute(
 	ctx context.Context,
 	gameType valueobject.GameType,
 	algorithmCount int,
+	maxDraws int,
 ) (*EnsembleResult, error) {
 	startTime := time.Now()
 
 	logger.Info("Starting prediction workflow",
 		zap.String("game_type", string(gameType)),
+		zap.Int("max_draws", maxDraws),
 	)
 
 	// Step 1: Fetch latest historical data
@@ -69,13 +72,17 @@ func (uc *PredictUseCase) Execute(
 		)
 	}
 
+	// Step 1.5: Sort draws by date (newest first) and limit to maxDraws
+	draws = sortAndLimitDraws(draws, maxDraws)
+
 	if len(draws) < algorithmCount {
 		return nil, fmt.Errorf("insufficient historical data: need at least %d draws, got %d",
 			algorithmCount, len(draws))
 	}
 
-	logger.Info("Historical data fetched",
+	logger.Info("Historical data fetched and filtered",
 		zap.Int("draws_count", len(draws)),
+		zap.Int("max_draws_used", maxDraws),
 	)
 
 	// Step 2: Generate predictions using ensemble
@@ -150,4 +157,19 @@ func formatNumbers(numbers valueobject.Numbers) []string {
 		result[i] = fmt.Sprintf("%02d", n)
 	}
 	return result
+}
+
+// sortAndLimitDraws sorts draws by date (newest first) and limits to maxDraws
+func sortAndLimitDraws(draws []*entity.Draw, maxDraws int) []*entity.Draw {
+	// Sort by draw date, newest first
+	sort.Slice(draws, func(i, j int) bool {
+		return draws[i].DrawDate.After(draws[j].DrawDate)
+	})
+
+	// Limit to maxDraws
+	if len(draws) > maxDraws {
+		draws = draws[:maxDraws]
+	}
+
+	return draws
 }
