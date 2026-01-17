@@ -94,8 +94,17 @@ func getExistingDraws() map[string]bool {
 
 // crawlFromAnnouncementPages crawls draws from announcement pages using headless browser
 func crawlFromAnnouncementPages() ([]*Draw, error) {
-	// Create context
-	ctx, cancel := chromedp.NewContext(context.Background())
+	// Create context with options to bypass sandbox restrictions on CI/CD
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("no-sandbox", true),
+		chromedp.Flag("disable-dev-shm-usage", true),
+		chromedp.Flag("disable-gpu", true),
+	)
+
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
+
+	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
 	// Set timeout
