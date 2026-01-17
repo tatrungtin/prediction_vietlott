@@ -32,7 +32,7 @@ jobs:
           TZ: 'Asia/Ho_Chi_Minh'
 
       - name: Run Power 6/55 crawler
-        run: go run scripts/power_6_55_crawler/main.go
+        run: go run scripts/chromedp_scraper/main.go
         env:
           TZ: 'Asia/Ho_Chi_Minh'
 
