@@ -26,8 +26,13 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
-      - name: Run Vietlott crawler
-        run: go run scripts/crawl_vietlott.go
+      - name: Run Mega 6/45 crawler
+        run: go run scripts/mega_6_45_crawler/main.go
+        env:
+          TZ: 'Asia/Ho_Chi_Minh'
+
+      - name: Run Power 6/55 crawler
+        run: go run scripts/power_6_55_crawler/main.go
         env:
           TZ: 'Asia/Ho_Chi_Minh'
 

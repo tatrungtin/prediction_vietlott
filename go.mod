@@ -27,7 +27,6 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/otiai10/gosseract/v2 v2.4.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
